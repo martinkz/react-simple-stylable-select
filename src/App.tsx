@@ -5,6 +5,7 @@ const countries = ["France", "South Africa", "Japan", "Antigua and Barbuda", "Ge
 function App() {
 	return (
 		<form action="/">
+			<h1>Custom select</h1>
 			{/* <input type="text" id="test" name="test" /> */}
 			<Select className="test" options={countries} id="test-select" name="test-select" />
 			<br />

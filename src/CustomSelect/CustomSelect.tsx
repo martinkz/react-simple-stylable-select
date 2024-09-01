@@ -1,4 +1,4 @@
-import { useEffect, useReducer } from "react";
+import { useEffect, useReducer, useRef } from "react";
 
 export type SelectProps = {
 	id: string;
@@ -10,7 +10,8 @@ export type SelectProps = {
 type State = {
 	optionsMounted: boolean;
 	optionsVisible: boolean;
-	value: string;
+	selectedIndex: number;
+	activeIndex: number;
 };
 
 type SelectAction =
@@ -18,7 +19,8 @@ type SelectAction =
 	| { type: "HIDE_DROPDOWN" }
 	| { type: "ANIMATE_OPTIONS_IN" }
 	| { type: "ANIMATE_OPTIONS_OUT" }
-	| { type: "SET_VALUE"; payload: string };
+	| { type: "SET_SELECTED_INDEX"; payload: number }
+	| { type: "SET_ACTIVE_INDEX"; payload: number };
 
 function reducer(state: State, action: SelectAction): State {
 	switch (action.type) {
@@ -30,8 +32,10 @@ function reducer(state: State, action: SelectAction): State {
 			return { ...state, optionsVisible: true };
 		case "ANIMATE_OPTIONS_OUT":
 			return { ...state, optionsVisible: false };
-		case "SET_VALUE":
-			return { ...state, value: action.payload };
+		case "SET_SELECTED_INDEX":
+			return { ...state, selectedIndex: action.payload };
+		case "SET_ACTIVE_INDEX":
+			return { ...state, activeIndex: action.payload };
 		default:
 			return state;
 	}
@@ -41,14 +45,62 @@ export default function Select({ id, name, options }: SelectProps) {
 	const [state, dispatch] = useReducer(reducer, {
 		optionsMounted: false,
 		optionsVisible: false,
-		value: options[0],
+		selectedIndex: 0,
+		activeIndex: 0,
 	});
+
+	const selectRef = useRef<HTMLDivElement>(null);
+	const optionRefs = useRef<(HTMLDivElement | null)[]>([]);
 
 	useEffect(() => {
 		if (state.optionsMounted) {
 			dispatch({ type: "ANIMATE_OPTIONS_IN" });
 		}
 	}, [state.optionsMounted]);
+
+	const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+		if (!state.optionsVisible) {
+			if (event.key === "ArrowDown" || event.key === "ArrowUp" || event.key === "Enter" || event.key === " ") {
+				event.preventDefault();
+				dispatch({ type: "SHOW_DROPDOWN" });
+			}
+			return;
+		}
+
+		switch (event.key) {
+			case "ArrowDown":
+				event.preventDefault();
+				dispatch({
+					type: "SET_ACTIVE_INDEX",
+					payload: (state.activeIndex + 1) % options.length,
+				});
+				break;
+			case "ArrowUp":
+				event.preventDefault();
+				dispatch({
+					type: "SET_ACTIVE_INDEX",
+					payload: (state.activeIndex - 1 + options.length) % options.length,
+				});
+				break;
+			case "Enter":
+			case " ":
+				event.preventDefault();
+				dispatch({ type: "SET_SELECTED_INDEX", payload: state.activeIndex });
+				dispatch({ type: "ANIMATE_OPTIONS_OUT" });
+				selectRef.current!.focus();
+				break;
+			case "Escape":
+				event.preventDefault();
+				dispatch({ type: "ANIMATE_OPTIONS_OUT" });
+				selectRef.current!.focus();
+				break;
+			case "Tab":
+				dispatch({ type: "ANIMATE_OPTIONS_OUT" });
+				break;
+			default:
+				break;
+		}
+	};
 
 	return (
 		<div style={{ maxWidth: "320px" }}>
@@ -61,20 +113,29 @@ export default function Select({ id, name, options }: SelectProps) {
 				aria-controls="listbox-container"
 				aria-owns="listbox-container"
 				aria-haspopup="listbox"
-				aria-expanded="false"
-				aria-activedescendant={`${id}-0`}
+				aria-expanded={state.optionsVisible}
+				aria-activedescendant={`${id}-${state.activeIndex}`}
 				aria-autocomplete="none"
+				tabIndex={0}
+				onKeyDown={handleKeyDown}
 				onClick={() => {
 					if (!state.optionsMounted) {
 						dispatch({ type: "SHOW_DROPDOWN" });
+						dispatch({ type: "SET_ACTIVE_INDEX", payload: state.selectedIndex });
 					}
 					if (state.optionsVisible) {
 						dispatch({ type: "ANIMATE_OPTIONS_OUT" });
 					}
 				}}
-				style={{ cursor: "default", backgroundColor: "#333", padding: "0.5rem", minWidth: "200px" }}
+				style={{
+					cursor: "default",
+					backgroundColor: "#333",
+					padding: "0.5rem",
+					minWidth: "200px",
+				}}
+				ref={selectRef}
 			>
-				{state.value}
+				{options[state.selectedIndex]}
 			</div>
 
 			{state.optionsMounted && (
@@ -105,16 +166,23 @@ export default function Select({ id, name, options }: SelectProps) {
 							{options &&
 								options.map((option, index) => (
 									<div
-										style={{ padding: "0.5rem" }}
+										ref={(el) => (optionRefs.current[index] = el)}
+										style={{
+											padding: "0.5rem",
+											backgroundColor: state.activeIndex === index ? "#555" : "transparent",
+										}}
 										role="option"
 										id={`${id}-${index}`}
 										key={index}
-										aria-selected={option === state.value}
+										aria-selected={index === state.selectedIndex}
+										tabIndex={-1}
 										onClick={() => {
-											dispatch({ type: "SET_VALUE", payload: option });
+											dispatch({ type: "SET_SELECTED_INDEX", payload: index });
 											dispatch({ type: "ANIMATE_OPTIONS_OUT" });
+											selectRef.current!.focus();
 										}}
 									>
+										{state.selectedIndex === index ? "✓ " : ""}
 										{option}
 									</div>
 								))}
@@ -123,7 +191,7 @@ export default function Select({ id, name, options }: SelectProps) {
 				</div>
 			)}
 
-			<input type="hidden" id={id} name={name} value={state.value} />
+			<input type="hidden" id={id} name={name} value={options[state.selectedIndex]} />
 		</div>
 	);
 }
