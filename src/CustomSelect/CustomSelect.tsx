@@ -15,17 +15,17 @@ type State = {
 };
 
 type SelectAction =
-	| { type: "SHOW_DROPDOWN" }
+	| { type: "SHOW_DROPDOWN"; index: number }
 	| { type: "HIDE_DROPDOWN" }
 	| { type: "ANIMATE_OPTIONS_IN" }
 	| { type: "ANIMATE_OPTIONS_OUT" }
-	| { type: "SET_SELECTED_INDEX"; payload: number }
-	| { type: "SET_ACTIVE_INDEX"; payload: number };
+	| { type: "SET_SELECTED_INDEX"; index: number }
+	| { type: "SET_ACTIVE_INDEX"; index: number };
 
 function reducer(state: State, action: SelectAction): State {
 	switch (action.type) {
 		case "SHOW_DROPDOWN":
-			return { ...state, optionsMounted: true };
+			return { ...state, optionsMounted: true, activeIndex: action.index };
 		case "HIDE_DROPDOWN":
 			return { ...state, optionsMounted: false };
 		case "ANIMATE_OPTIONS_IN":
@@ -33,9 +33,9 @@ function reducer(state: State, action: SelectAction): State {
 		case "ANIMATE_OPTIONS_OUT":
 			return { ...state, optionsVisible: false };
 		case "SET_SELECTED_INDEX":
-			return { ...state, selectedIndex: action.payload };
+			return { ...state, selectedIndex: action.index };
 		case "SET_ACTIVE_INDEX":
-			return { ...state, activeIndex: action.payload };
+			return { ...state, activeIndex: action.index };
 		default:
 			return state;
 	}
@@ -84,8 +84,7 @@ export default function Select({ id, name, options }: SelectProps) {
 		if (!state.optionsVisible) {
 			if (event.key === "ArrowDown" || event.key === "ArrowUp" || event.key === "Enter" || event.key === " ") {
 				event.preventDefault();
-				dispatch({ type: "SHOW_DROPDOWN" });
-				dispatch({ type: "SET_ACTIVE_INDEX", payload: state.selectedIndex });
+				dispatch({ type: "SHOW_DROPDOWN", index: state.selectedIndex });
 			}
 			return;
 		}
@@ -95,20 +94,20 @@ export default function Select({ id, name, options }: SelectProps) {
 				event.preventDefault();
 				dispatch({
 					type: "SET_ACTIVE_INDEX",
-					payload: (state.activeIndex + 1) % options.length,
+					index: (state.activeIndex + 1) % options.length,
 				});
 				break;
 			case "ArrowUp":
 				event.preventDefault();
 				dispatch({
 					type: "SET_ACTIVE_INDEX",
-					payload: (state.activeIndex - 1 + options.length) % options.length,
+					index: (state.activeIndex - 1 + options.length) % options.length,
 				});
 				break;
 			case "Enter":
 			case " ":
 				event.preventDefault();
-				dispatch({ type: "SET_SELECTED_INDEX", payload: state.activeIndex });
+				dispatch({ type: "SET_SELECTED_INDEX", index: state.activeIndex });
 				dispatch({ type: "ANIMATE_OPTIONS_OUT" });
 				selectRef.current!.focus();
 				break;
@@ -143,8 +142,7 @@ export default function Select({ id, name, options }: SelectProps) {
 				onKeyDown={handleKeyDown}
 				onClick={() => {
 					if (!state.optionsMounted) {
-						dispatch({ type: "SHOW_DROPDOWN" });
-						dispatch({ type: "SET_ACTIVE_INDEX", payload: state.selectedIndex });
+						dispatch({ type: "SHOW_DROPDOWN", index: state.selectedIndex });
 					}
 					if (state.optionsVisible) {
 						dispatch({ type: "ANIMATE_OPTIONS_OUT" });
@@ -201,7 +199,7 @@ export default function Select({ id, name, options }: SelectProps) {
 										aria-selected={index === state.selectedIndex}
 										tabIndex={-1}
 										onClick={() => {
-											dispatch({ type: "SET_SELECTED_INDEX", payload: index });
+											dispatch({ type: "SET_SELECTED_INDEX", index: index });
 											dispatch({ type: "ANIMATE_OPTIONS_OUT" });
 											selectRef.current!.focus();
 										}}
