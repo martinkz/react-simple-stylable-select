@@ -50,7 +50,8 @@ export default function Select({ id, name, options }: SelectProps) {
 	});
 
 	const selectRef = useRef<HTMLDivElement>(null);
-	const optionRefs = useRef<(HTMLDivElement | null)[]>([]);
+	const optionsRef = useRef<HTMLDivElement>(null);
+	// const optionRefs = useRef<(HTMLDivElement | null)[]>([]);
 
 	useEffect(() => {
 		if (state.optionsMounted) {
@@ -58,11 +59,33 @@ export default function Select({ id, name, options }: SelectProps) {
 		}
 	}, [state.optionsMounted]);
 
+	useEffect(() => {
+		function handleClickOutside(event: MouseEvent | TouchEvent) {
+			if (
+				selectRef.current &&
+				!selectRef.current.contains(event.target as Node) &&
+				optionsRef.current &&
+				!optionsRef.current.contains(event.target as Node)
+			) {
+				dispatch({ type: "ANIMATE_OPTIONS_OUT" });
+			}
+		}
+
+		document.addEventListener("mousedown", handleClickOutside);
+		document.addEventListener("touchstart", handleClickOutside);
+
+		return () => {
+			document.removeEventListener("mousedown", handleClickOutside);
+			document.removeEventListener("touchstart", handleClickOutside);
+		};
+	}, [state.optionsVisible]);
+
 	const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
 		if (!state.optionsVisible) {
 			if (event.key === "ArrowDown" || event.key === "ArrowUp" || event.key === "Enter" || event.key === " ") {
 				event.preventDefault();
 				dispatch({ type: "SHOW_DROPDOWN" });
+				dispatch({ type: "SET_ACTIVE_INDEX", payload: state.selectedIndex });
 			}
 			return;
 		}
@@ -141,6 +164,7 @@ export default function Select({ id, name, options }: SelectProps) {
 			{state.optionsMounted && (
 				<div style={{ position: "relative" }}>
 					<div
+						ref={optionsRef}
 						id="listbox-container"
 						aria-labelledby="select-label"
 						role="listbox"
@@ -166,7 +190,7 @@ export default function Select({ id, name, options }: SelectProps) {
 							{options &&
 								options.map((option, index) => (
 									<div
-										ref={(el) => (optionRefs.current[index] = el)}
+										// ref={(el) => (optionRefs.current[index] = el)}
 										style={{
 											padding: "0.5rem",
 											backgroundColor: state.activeIndex === index ? "#555" : "transparent",
