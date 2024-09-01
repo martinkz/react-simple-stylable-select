@@ -1,4 +1,4 @@
-import Select from "./CustomSelect/CustomSelect";
+import { CustomSelect } from "./CustomSelect/CustomSelect";
 
 const countries = ["France", "South Africa", "Japan", "Antigua and Barbuda", "Germany", "United Kingdom"];
 
@@ -7,7 +7,7 @@ function App() {
 		<form action="/">
 			<h1>Custom select</h1>
 			{/* <input type="text" id="test" name="test" /> */}
-			<Select className="test" options={countries} id="test-select" name="test-select" />
+			<CustomSelect className="test" options={countries} id="test-select" name="test-select" />
 			<br />
 			<select>
 				<option value="volvo">Volvo</option>

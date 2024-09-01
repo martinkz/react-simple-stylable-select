@@ -41,7 +41,7 @@ function reducer(state: State, action: SelectAction): State {
 	}
 }
 
-export default function Select({ id, name, options }: SelectProps) {
+export function CustomSelect({ id, name, options }: SelectProps) {
 	const [state, dispatch] = useReducer(reducer, {
 		optionsMounted: false,
 		optionsVisible: false,
