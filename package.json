@@ -2,13 +2,13 @@
 	"name": "react-simple-select",
 	"version": "0.0.1",
 	"type": "module",
-	"main": "./dist/custom-select.umd.cjs",
-	"module": "./dist/custom-select.js",
+	"main": "./dist/react-simple-select.umd.cjs",
+	"module": "./dist/react-simple-select.js",
 	"types": "./dist/index.d.ts",
 	"exports": {
 		".": {
-			"import": "./dist/custom-select.js",
-			"require": "./dist/custom-select.umd.cjs",
+			"import": "./dist/react-simple-select.js",
+			"require": "./dist/react-simple-select.umd.cjs",
 			"types": "./dist/index.d.ts"
 		}
 	},

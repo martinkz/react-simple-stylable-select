@@ -41,7 +41,7 @@ function reducer(state: State, action: SelectAction): State {
 	}
 }
 
-export function CustomSelect({ id, name, options }: SelectProps) {
+export function Select({ id, name, options }: SelectProps) {
 	const [state, dispatch] = useReducer(reducer, {
 		optionsMounted: false,
 		optionsVisible: false,
@@ -129,7 +129,7 @@ export function CustomSelect({ id, name, options }: SelectProps) {
 			<label id="select-label">Make a choice</label>
 
 			<div
-				id="custom-select"
+				id="react-simple-select"
 				role="combobox"
 				aria-labelledby="select-label"
 				aria-controls="listbox-container"

@@ -3,13 +3,13 @@ import { describe, test, expect } from "vitest";
 import { render, screen, within, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import { CustomSelect } from "./CustomSelect";
+import { Select } from "./Select";
 
 const selectOptions = ["Option 1", "Option 2", "Option 3"];
 
-describe("CustomSelect", () => {
+describe("Select", () => {
 	test("It renders with the first option selected", () => {
-		render(<CustomSelect id="custom-select" name="custom-select" options={selectOptions} />);
+		render(<Select id="react-simple-select" name="react-simple-select" options={selectOptions} />);
 
 		const select = screen.getByRole("combobox");
 		expect(select).toHaveTextContent("Option 1");
@@ -17,7 +17,7 @@ describe("CustomSelect", () => {
 
 	test("It selects option on click", async () => {
 		const user = userEvent.setup();
-		render(<CustomSelect id="custom-select" name="custom-select" options={selectOptions} />);
+		render(<Select id="react-simple-select" name="react-simple-select" options={selectOptions} />);
 
 		const select = screen.getByRole("combobox");
 		await user.click(select);
@@ -28,7 +28,7 @@ describe("CustomSelect", () => {
 
 	test("It opens dropdown with Enter key", async () => {
 		const user = userEvent.setup();
-		render(<CustomSelect id="custom-select" name="custom-select" options={selectOptions} />);
+		render(<Select id="react-simple-select" name="react-simple-select" options={selectOptions} />);
 
 		const select = screen.getByRole("combobox");
 		select.focus();
@@ -40,7 +40,7 @@ describe("CustomSelect", () => {
 
 	test("It opens dropdown with Space key", async () => {
 		const user = userEvent.setup();
-		render(<CustomSelect id="custom-select" name="custom-select" options={selectOptions} />);
+		render(<Select id="react-simple-select" name="react-simple-select" options={selectOptions} />);
 
 		const select = screen.getByRole("combobox");
 		select.focus();
@@ -52,7 +52,7 @@ describe("CustomSelect", () => {
 
 	test("It navigates options with arrow keys", async () => {
 		const user = userEvent.setup();
-		render(<CustomSelect id="custom-select" name="custom-select" options={selectOptions} />);
+		render(<Select id="react-simple-select" name="react-simple-select" options={selectOptions} />);
 
 		const select = screen.getByRole("combobox");
 		select.focus();
@@ -72,7 +72,7 @@ describe("CustomSelect", () => {
 
 	test("It selects option with Enter key", async () => {
 		const user = userEvent.setup();
-		render(<CustomSelect id="custom-select" name="custom-select" options={selectOptions} />);
+		render(<Select id="react-simple-select" name="react-simple-select" options={selectOptions} />);
 
 		const select = screen.getByRole("combobox");
 		select.focus();
@@ -83,7 +83,7 @@ describe("CustomSelect", () => {
 
 	test("It selects option with Space key", async () => {
 		const user = userEvent.setup();
-		render(<CustomSelect id="custom-select" name="custom-select" options={selectOptions} />);
+		render(<Select id="react-simple-select" name="react-simple-select" options={selectOptions} />);
 
 		const select = screen.getByRole("combobox");
 		select.focus();
@@ -94,7 +94,7 @@ describe("CustomSelect", () => {
 
 	test("It wraps around when navigating past last or first option", async () => {
 		const user = userEvent.setup();
-		render(<CustomSelect id="custom-select" name="custom-select" options={selectOptions} />);
+		render(<Select id="react-simple-select" name="react-simple-select" options={selectOptions} />);
 
 		const select = screen.getByRole("combobox");
 		select.focus();
@@ -116,7 +116,7 @@ describe("CustomSelect", () => {
 
 	test("It maintains selected option when closing and reopening dropdown", async () => {
 		const user = userEvent.setup();
-		render(<CustomSelect id="custom-select" name="custom-select" options={selectOptions} />);
+		render(<Select id="react-simple-select" name="react-simple-select" options={selectOptions} />);
 
 		const select = screen.getByRole("combobox");
 		select.focus();
@@ -135,7 +135,7 @@ describe("CustomSelect", () => {
 
 	test("It closes dropdown with Escape key", async () => {
 		const user = userEvent.setup();
-		render(<CustomSelect id="custom-select" name="custom-select" options={selectOptions} />);
+		render(<Select id="react-simple-select" name="react-simple-select" options={selectOptions} />);
 
 		const select = screen.getByRole("combobox");
 		select.focus();
@@ -151,7 +151,7 @@ describe("CustomSelect", () => {
 
 	test("It closes dropdown when clicking outside", async () => {
 		const user = userEvent.setup();
-		render(<CustomSelect id="custom-select" name="custom-select" options={selectOptions} />);
+		render(<Select id="react-simple-select" name="react-simple-select" options={selectOptions} />);
 
 		const select = screen.getByRole("combobox");
 		await user.click(select);

@@ -11,16 +11,16 @@ export default defineConfig({
 		react(),
 		// libInjectCss(),
 		dts({
-			include: ["src/CustomSelect"],
+			include: ["src/Select"],
 			insertTypesEntry: true,
 		}),
 	],
 	build: {
 		copyPublicDir: false,
 		lib: {
-			entry: resolve(__dirname, "src/CustomSelect/index.ts"),
-			name: "custom-select",
-			fileName: "custom-select",
+			entry: resolve(__dirname, "src/Select/index.ts"),
+			name: "react-simple-select",
+			fileName: "react-simple-select",
 			formats: ["es", "umd"],
 		},
 		rollupOptions: {
