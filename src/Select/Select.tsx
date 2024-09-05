@@ -12,7 +12,6 @@ type State = {
 	optionsVisible: boolean;
 	selectedIndex: number;
 	activeIndex: number;
-	options: string[];
 };
 
 type SelectAction =
@@ -48,7 +47,6 @@ export function Select({ id, name, options }: SelectProps) {
 		optionsVisible: false,
 		selectedIndex: 0,
 		activeIndex: 0,
-		options,
 	});
 
 	const selectRef = useRef<HTMLDivElement>(null);
@@ -83,14 +81,52 @@ export function Select({ id, name, options }: SelectProps) {
 
 	return (
 		<>
-			<SelectContainer ref={selectRef} state={state} dispatch={dispatch} id={id}>
+			<SelectContainer
+				ref={selectRef}
+				state={state}
+				dispatch={dispatch}
+				id={id}
+				options={options}
+				style={{
+					cursor: "default",
+					backgroundColor: "#333",
+					padding: "0.5rem",
+					minWidth: "200px",
+				}}
+			>
 				{options[state.selectedIndex]}
 			</SelectContainer>
 
 			{state.optionsMounted && (
-				<OptionsContainer ref={optionsRef} state={state} dispatch={dispatch}>
+				<OptionsContainer
+					ref={optionsRef}
+					state={state}
+					dispatch={dispatch}
+					style={{
+						gridTemplateRows: state.optionsVisible ? "1fr" : "0fr",
+						backgroundColor: "#333",
+						display: "grid",
+						position: "absolute",
+						left: 0,
+						top: 0,
+						width: "100%",
+						transition: "all 0.3s ease",
+						cursor: "default",
+					}}
+				>
 					{options.map((option, index) => (
-						<OptionItem key={index} state={state} dispatch={dispatch} index={index} id={`${id}-${index}`}>
+						<OptionItem
+							key={index}
+							state={state}
+							dispatch={dispatch}
+							index={index}
+							id={`${id}-${index}`}
+							style={{
+								padding: "0.5rem",
+								backgroundColor: state.activeIndex === index ? "#555" : "transparent",
+							}}
+						>
+							{state.selectedIndex === index ? "✓ " : ""}
 							{option}
 						</OptionItem>
 					))}
@@ -107,10 +143,11 @@ type SelectContainerProps = {
 	dispatch: React.Dispatch<SelectAction>;
 	children: ReactNode;
 	id: string;
-};
+	options: string[];
+} & React.HTMLProps<HTMLDivElement>;
 
 export const SelectContainer = forwardRef<HTMLDivElement, SelectContainerProps>(
-	({ state, dispatch, children, id }, ref) => {
+	({ state, dispatch, children, id, options, ...props }, ref) => {
 		const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
 			if (!state.optionsVisible) {
 				if (event.key === "ArrowDown" || event.key === "ArrowUp" || event.key === "Enter" || event.key === " ") {
@@ -125,14 +162,14 @@ export const SelectContainer = forwardRef<HTMLDivElement, SelectContainerProps>(
 					event.preventDefault();
 					dispatch({
 						type: "SET_ACTIVE_INDEX",
-						index: (state.activeIndex + 1) % state.options.length,
+						index: (state.activeIndex + 1) % options.length,
 					});
 					break;
 				case "ArrowUp":
 					event.preventDefault();
 					dispatch({
 						type: "SET_ACTIVE_INDEX",
-						index: (state.activeIndex - 1 + state.options.length) % state.options.length,
+						index: (state.activeIndex - 1 + options.length) % options.length,
 					});
 					break;
 				case "Enter":
@@ -170,12 +207,7 @@ export const SelectContainer = forwardRef<HTMLDivElement, SelectContainerProps>(
 					}
 				}}
 				onKeyDown={handleKeyDown}
-				style={{
-					cursor: "default",
-					backgroundColor: "#333",
-					padding: "0.5rem",
-					minWidth: "200px",
-				}}
+				{...props}
 			>
 				{children}
 			</div>
@@ -187,31 +219,22 @@ type OptionsContainerProps = {
 	state: State;
 	dispatch: React.Dispatch<SelectAction>;
 	children: ReactNode;
-};
+} & React.HTMLProps<HTMLDivElement>;
 
 export const OptionsContainer = forwardRef<HTMLDivElement, OptionsContainerProps>(
-	({ state, dispatch, children }, ref) => {
+	({ state, dispatch, children, ...props }, ref) => {
 		return (
 			<div style={{ position: "relative" }}>
 				<div
 					ref={ref}
 					role="listbox"
 					tabIndex={-1}
-					style={{
-						gridTemplateRows: state.optionsVisible ? "1fr" : "0fr",
-						display: "grid",
-						position: "absolute",
-						left: 0,
-						top: 0,
-						width: "100%",
-						transition: "all 0.3s ease",
-						cursor: "default",
-					}}
 					onTransitionEnd={() => {
 						if (!state.optionsVisible) {
 							dispatch({ type: "HIDE_DROPDOWN" });
 						}
 					}}
+					{...props}
 				>
 					<div style={{ overflow: "hidden" }}>{children}</div>
 				</div>
@@ -226,15 +249,11 @@ type OptionItemProps = {
 	index: number;
 	id: string;
 	children: ReactNode;
-};
+} & React.HTMLProps<HTMLDivElement>;
 
-export function OptionItem({ state, dispatch, index, id, children }: OptionItemProps) {
+export function OptionItem({ state, dispatch, index, id, children, ...props }: OptionItemProps) {
 	return (
 		<div
-			style={{
-				padding: "0.5rem",
-				backgroundColor: state.activeIndex === index ? "#555" : "transparent",
-			}}
 			role="option"
 			id={id}
 			aria-selected={index === state.selectedIndex}
@@ -243,8 +262,8 @@ export function OptionItem({ state, dispatch, index, id, children }: OptionItemP
 				dispatch({ type: "SET_SELECTED_INDEX", index });
 				dispatch({ type: "ANIMATE_OPTIONS_OUT" });
 			}}
+			{...props}
 		>
-			{state.selectedIndex === index ? "✓ " : ""}
 			{children}
 		</div>
 	);
