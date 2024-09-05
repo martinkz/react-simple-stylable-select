@@ -7,7 +7,10 @@ function App() {
 		<form action="/">
 			<h1>Custom select</h1>
 			{/* <input type="text" id="test" name="test" /> */}
-			<Select className="test" options={countries} id="test-select" name="test-select" />
+			<div style={{ maxWidth: "320px" }}>
+				<label id="select-label">Make a choice</label>
+				<Select className="test" options={countries} id="test-select" name="test-select" />
+			</div>
 			<br />
 			<select>
 				<option value="volvo">Volvo</option>
