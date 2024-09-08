@@ -83,8 +83,16 @@ export function Select({ id, name, options }: SelectProps) {
 		<>
 			<SelectContainer
 				ref={selectRef}
-				state={state}
-				dispatch={dispatch}
+				isVisible={state.optionsVisible}
+				selectedIndex={state.selectedIndex}
+				activeIndex={state.activeIndex}
+				onShowDropdown={() => dispatch({ type: "SHOW_DROPDOWN", index: state.selectedIndex })}
+				onHideDropdown={() => dispatch({ type: "ANIMATE_OPTIONS_OUT" })}
+				onChangeActiveIndex={(index) => dispatch({ type: "SET_ACTIVE_INDEX", index })}
+				onSelect2={(index) => {
+					dispatch({ type: "SET_SELECTED_INDEX", index });
+					dispatch({ type: "ANIMATE_OPTIONS_OUT" });
+				}}
 				id={id}
 				options={options}
 				style={{
@@ -100,8 +108,12 @@ export function Select({ id, name, options }: SelectProps) {
 			{state.optionsMounted && (
 				<OptionsContainer
 					ref={optionsRef}
-					state={state}
-					dispatch={dispatch}
+					// isVisible={state.optionsVisible}
+					onTransitionEnd={() => {
+						if (!state.optionsVisible) {
+							dispatch({ type: "HIDE_DROPDOWN" });
+						}
+					}}
 					style={{
 						gridTemplateRows: state.optionsVisible ? "1fr" : "0fr",
 						backgroundColor: "#333",
@@ -117,9 +129,12 @@ export function Select({ id, name, options }: SelectProps) {
 					{options.map((option, index) => (
 						<OptionItem
 							key={index}
-							state={state}
-							dispatch={dispatch}
-							index={index}
+							isSelected={state.selectedIndex === index}
+							isActive={state.activeIndex === index}
+							onSelect2={() => {
+								dispatch({ type: "SET_SELECTED_INDEX", index });
+								dispatch({ type: "ANIMATE_OPTIONS_OUT" });
+							}}
 							id={`${id}-${index}`}
 							style={{
 								padding: "0.5rem",
@@ -139,20 +154,40 @@ export function Select({ id, name, options }: SelectProps) {
 }
 
 type SelectContainerProps = {
-	state: State;
-	dispatch: React.Dispatch<SelectAction>;
+	isVisible: boolean;
+	selectedIndex: number;
+	activeIndex: number;
+	onShowDropdown: () => void;
+	onHideDropdown: () => void;
+	onChangeActiveIndex: (index: number) => void;
+	onSelect2: (index: number) => void;
 	children: ReactNode;
 	id: string;
 	options: string[];
 } & React.HTMLProps<HTMLDivElement>;
 
 export const SelectContainer = forwardRef<HTMLDivElement, SelectContainerProps>(
-	({ state, dispatch, children, id, options, ...props }, ref) => {
+	(
+		{
+			isVisible,
+			selectedIndex,
+			activeIndex,
+			onShowDropdown,
+			onHideDropdown,
+			onChangeActiveIndex,
+			onSelect2,
+			children,
+			id,
+			options,
+			...props
+		},
+		ref
+	) => {
 		const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-			if (!state.optionsVisible) {
+			if (!isVisible) {
 				if (event.key === "ArrowDown" || event.key === "ArrowUp" || event.key === "Enter" || event.key === " ") {
 					event.preventDefault();
-					dispatch({ type: "SHOW_DROPDOWN", index: state.selectedIndex });
+					onShowDropdown();
 				}
 				return;
 			}
@@ -160,30 +195,23 @@ export const SelectContainer = forwardRef<HTMLDivElement, SelectContainerProps>(
 			switch (event.key) {
 				case "ArrowDown":
 					event.preventDefault();
-					dispatch({
-						type: "SET_ACTIVE_INDEX",
-						index: (state.activeIndex + 1) % options.length,
-					});
+					onChangeActiveIndex((activeIndex + 1) % options.length);
 					break;
 				case "ArrowUp":
 					event.preventDefault();
-					dispatch({
-						type: "SET_ACTIVE_INDEX",
-						index: (state.activeIndex - 1 + options.length) % options.length,
-					});
+					onChangeActiveIndex((activeIndex - 1 + options.length) % options.length);
 					break;
 				case "Enter":
 				case " ":
 					event.preventDefault();
-					dispatch({ type: "SET_SELECTED_INDEX", index: state.activeIndex });
-					dispatch({ type: "ANIMATE_OPTIONS_OUT" });
+					onSelect2(activeIndex);
 					break;
 				case "Escape":
 					event.preventDefault();
-					dispatch({ type: "ANIMATE_OPTIONS_OUT" });
+					onHideDropdown();
 					break;
 				case "Tab":
-					dispatch({ type: "ANIMATE_OPTIONS_OUT" });
+					onHideDropdown();
 					break;
 				default:
 					break;
@@ -196,14 +224,14 @@ export const SelectContainer = forwardRef<HTMLDivElement, SelectContainerProps>(
 				id={id}
 				role="combobox"
 				aria-haspopup="listbox"
-				aria-expanded={state.optionsVisible}
-				aria-activedescendant={`${id}-${state.activeIndex}`}
+				aria-expanded={isVisible}
+				aria-activedescendant={`${id}-${activeIndex}`}
 				tabIndex={0}
 				onClick={() => {
-					if (!state.optionsMounted) {
-						dispatch({ type: "SHOW_DROPDOWN", index: state.selectedIndex });
-					} else if (state.optionsVisible) {
-						dispatch({ type: "ANIMATE_OPTIONS_OUT" });
+					if (!isVisible) {
+						onShowDropdown();
+					} else {
+						onHideDropdown();
 					}
 				}}
 				onKeyDown={handleKeyDown}
@@ -216,26 +244,16 @@ export const SelectContainer = forwardRef<HTMLDivElement, SelectContainerProps>(
 );
 
 type OptionsContainerProps = {
-	state: State;
-	dispatch: React.Dispatch<SelectAction>;
+	// isVisible: boolean;
+	onTransitionEnd: () => void;
 	children: ReactNode;
 } & React.HTMLProps<HTMLDivElement>;
 
 export const OptionsContainer = forwardRef<HTMLDivElement, OptionsContainerProps>(
-	({ state, dispatch, children, ...props }, ref) => {
+	({ onTransitionEnd, children, ...props }, ref) => {
 		return (
 			<div style={{ position: "relative" }}>
-				<div
-					ref={ref}
-					role="listbox"
-					tabIndex={-1}
-					onTransitionEnd={() => {
-						if (!state.optionsVisible) {
-							dispatch({ type: "HIDE_DROPDOWN" });
-						}
-					}}
-					{...props}
-				>
+				<div ref={ref} role="listbox" tabIndex={-1} onTransitionEnd={onTransitionEnd} {...props}>
 					<div style={{ overflow: "hidden" }}>{children}</div>
 				</div>
 			</div>
@@ -244,26 +262,16 @@ export const OptionsContainer = forwardRef<HTMLDivElement, OptionsContainerProps
 );
 
 type OptionItemProps = {
-	state: State;
-	dispatch: React.Dispatch<SelectAction>;
-	index: number;
+	isSelected: boolean;
+	isActive: boolean;
+	onSelect2: () => void;
 	id: string;
 	children: ReactNode;
 } & React.HTMLProps<HTMLDivElement>;
 
-export function OptionItem({ state, dispatch, index, id, children, ...props }: OptionItemProps) {
+export function OptionItem({ isSelected, isActive, onSelect2, id, children, ...props }: OptionItemProps) {
 	return (
-		<div
-			role="option"
-			id={id}
-			aria-selected={index === state.selectedIndex}
-			tabIndex={-1}
-			onClick={() => {
-				dispatch({ type: "SET_SELECTED_INDEX", index });
-				dispatch({ type: "ANIMATE_OPTIONS_OUT" });
-			}}
-			{...props}
-		>
+		<div role="option" id={id} aria-selected={isSelected} tabIndex={-1} onClick={onSelect2} {...props}>
 			{children}
 		</div>
 	);
