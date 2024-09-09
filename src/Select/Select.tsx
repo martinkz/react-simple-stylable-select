@@ -96,7 +96,7 @@ export function Select({ id, name, options, components }: SelectProps) {
 				ref={selectRef}
 				id={id}
 				options={options}
-				isVisible={state.optionsVisible}
+				optionsVisible={state.optionsVisible}
 				activeIndex={state.activeIndex}
 				onShowDropdown={() => dispatch({ type: "SHOW_DROPDOWN", index: state.selectedIndex })}
 				onHideDropdown={() => dispatch({ type: "ANIMATE_OPTIONS_OUT" })}
@@ -155,7 +155,7 @@ export function Select({ id, name, options, components }: SelectProps) {
 }
 
 type SelectContainerProps = {
-	isVisible: boolean;
+	optionsVisible: boolean;
 	activeIndex: number;
 	onShowDropdown: () => void;
 	onHideDropdown: () => void;
@@ -164,12 +164,12 @@ type SelectContainerProps = {
 	children: ReactNode;
 	id: string;
 	options: string[];
-} & React.HTMLProps<HTMLDivElement>;
+};
 
 export const SelectContainer = forwardRef<HTMLDivElement, SelectContainerProps>(
 	(
 		{
-			isVisible,
+			optionsVisible,
 			activeIndex,
 			onShowDropdown,
 			onHideDropdown,
@@ -178,12 +178,11 @@ export const SelectContainer = forwardRef<HTMLDivElement, SelectContainerProps>(
 			children,
 			id,
 			options,
-			...props
 		},
 		ref
 	) => {
 		const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-			if (!isVisible) {
+			if (!optionsVisible) {
 				if (event.key === "ArrowDown" || event.key === "ArrowUp" || event.key === "Enter" || event.key === " ") {
 					event.preventDefault();
 					onShowDropdown();
@@ -223,18 +222,17 @@ export const SelectContainer = forwardRef<HTMLDivElement, SelectContainerProps>(
 				id={id}
 				role="combobox"
 				aria-haspopup="listbox"
-				aria-expanded={isVisible}
+				aria-expanded={optionsVisible}
 				aria-activedescendant={`${id}-${activeIndex}`}
 				tabIndex={0}
 				onClick={() => {
-					if (!isVisible) {
+					if (!optionsVisible) {
 						onShowDropdown();
 					} else {
 						onHideDropdown();
 					}
 				}}
 				onKeyDown={handleKeyDown}
-				{...props}
 			>
 				{children}
 			</div>
