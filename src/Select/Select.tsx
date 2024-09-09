@@ -93,7 +93,7 @@ export function Select({ id, name, options, components }: SelectProps) {
 	return (
 		<>
 			<SelectContainer
-				ref={selectRef}
+				selectRef={selectRef}
 				id={id}
 				options={options}
 				optionsVisible={state.optionsVisible}
@@ -111,7 +111,7 @@ export function Select({ id, name, options, components }: SelectProps) {
 
 			{state.optionsMounted && (
 				<OptionsContainer
-					ref={optionsRef}
+					optionsRef={optionsRef}
 					optionsVisible={state.optionsVisible}
 					onTransitionEnd={() => {
 						if (!state.optionsVisible) {
@@ -155,6 +155,7 @@ export function Select({ id, name, options, components }: SelectProps) {
 }
 
 type SelectContainerProps = {
+	selectRef: React.RefObject<HTMLDivElement>;
 	optionsVisible: boolean;
 	activeIndex: number;
 	onShowDropdown: () => void;
@@ -166,112 +167,107 @@ type SelectContainerProps = {
 	options: string[];
 };
 
-export const SelectContainer = forwardRef<HTMLDivElement, SelectContainerProps>(
-	(
-		{
-			optionsVisible,
-			activeIndex,
-			onShowDropdown,
-			onHideDropdown,
-			onChangeActiveIndex,
-			onSelectOption,
-			children,
-			id,
-			options,
-		},
-		ref
-	) => {
-		const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-			if (!optionsVisible) {
-				if (event.key === "ArrowDown" || event.key === "ArrowUp" || event.key === "Enter" || event.key === " ") {
-					event.preventDefault();
+export const SelectContainer = ({
+	selectRef,
+	optionsVisible,
+	activeIndex,
+	onShowDropdown,
+	onHideDropdown,
+	onChangeActiveIndex,
+	onSelectOption,
+	children,
+	id,
+	options,
+}: SelectContainerProps) => {
+	const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+		if (!optionsVisible) {
+			if (event.key === "ArrowDown" || event.key === "ArrowUp" || event.key === "Enter" || event.key === " ") {
+				event.preventDefault();
+				onShowDropdown();
+			}
+			return;
+		}
+
+		switch (event.key) {
+			case "ArrowDown":
+				event.preventDefault();
+				onChangeActiveIndex((activeIndex + 1) % options.length);
+				break;
+			case "ArrowUp":
+				event.preventDefault();
+				onChangeActiveIndex((activeIndex - 1 + options.length) % options.length);
+				break;
+			case "Enter":
+			case " ":
+				event.preventDefault();
+				onSelectOption(activeIndex);
+				break;
+			case "Escape":
+				event.preventDefault();
+				onHideDropdown();
+				break;
+			case "Tab":
+				onHideDropdown();
+				break;
+			default:
+				break;
+		}
+	};
+
+	return (
+		<div
+			ref={selectRef}
+			id={id}
+			role="combobox"
+			aria-haspopup="listbox"
+			aria-expanded={optionsVisible}
+			aria-activedescendant={`${id}-${activeIndex}`}
+			tabIndex={0}
+			onClick={() => {
+				if (!optionsVisible) {
 					onShowDropdown();
+				} else {
+					onHideDropdown();
 				}
-				return;
-			}
-
-			switch (event.key) {
-				case "ArrowDown":
-					event.preventDefault();
-					onChangeActiveIndex((activeIndex + 1) % options.length);
-					break;
-				case "ArrowUp":
-					event.preventDefault();
-					onChangeActiveIndex((activeIndex - 1 + options.length) % options.length);
-					break;
-				case "Enter":
-				case " ":
-					event.preventDefault();
-					onSelectOption(activeIndex);
-					break;
-				case "Escape":
-					event.preventDefault();
-					onHideDropdown();
-					break;
-				case "Tab":
-					onHideDropdown();
-					break;
-				default:
-					break;
-			}
-		};
-
-		return (
-			<div
-				ref={ref}
-				id={id}
-				role="combobox"
-				aria-haspopup="listbox"
-				aria-expanded={optionsVisible}
-				aria-activedescendant={`${id}-${activeIndex}`}
-				tabIndex={0}
-				onClick={() => {
-					if (!optionsVisible) {
-						onShowDropdown();
-					} else {
-						onHideDropdown();
-					}
-				}}
-				onKeyDown={handleKeyDown}
-			>
-				{children}
-			</div>
-		);
-	}
-);
+			}}
+			onKeyDown={handleKeyDown}
+		>
+			{children}
+		</div>
+	);
+};
 
 type OptionsContainerProps = {
+	optionsRef: React.RefObject<HTMLDivElement>;
 	optionsVisible: boolean;
 	onTransitionEnd: () => void;
 	children: ReactNode;
 };
 
-export const OptionsContainer = forwardRef<HTMLDivElement, OptionsContainerProps>(
-	({ optionsVisible, onTransitionEnd, children }, ref) => {
-		return (
-			<div style={{ position: "relative" }}>
-				<div
-					ref={ref}
-					role="listbox"
-					tabIndex={-1}
-					onTransitionEnd={onTransitionEnd}
-					style={{
-						gridTemplateRows: optionsVisible ? "1fr" : "0fr",
-						display: "grid",
-						position: "absolute",
-						left: 0,
-						top: 0,
-						width: "100%",
-						transition: "all 0.3s ease",
-						cursor: "default",
-					}}
-				>
-					<div style={{ overflow: "hidden" }}>{children}</div>
-				</div>
+export const OptionsContainer = ({ optionsRef, optionsVisible, onTransitionEnd, children }: OptionsContainerProps) => {
+	return (
+		<div style={{ position: "relative" }}>
+			<div
+				ref={optionsRef}
+				role="listbox"
+				tabIndex={-1}
+				onTransitionEnd={onTransitionEnd}
+				style={{
+					gridTemplateRows: optionsVisible ? "1fr" : "0fr",
+					display: "grid",
+					position: "absolute",
+					left: 0,
+					top: 0,
+					width: "100%",
+					transition: "all 0.3s ease",
+					cursor: "default",
+				}}
+			>
+				<div style={{ overflow: "hidden" }}>{children}</div>
 			</div>
-		);
-	}
-);
+		</div>
+	);
+};
 
 type OptionItemProps = {
 	isSelected: boolean;
