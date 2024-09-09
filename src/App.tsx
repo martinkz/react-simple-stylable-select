@@ -14,11 +14,14 @@ function App() {
 				<Select className="test" options={countries} id="test-select" name="test-select" />
 			</div> */}
 			{/* <br /> */}
+			<label htmlFor="custom-select" id="select-label">
+				Make a choice
+			</label>
 			<div style={{ maxWidth: "320px" }}>
-				<label htmlFor="custom-select" id="select-label">
-					Make a choice
-				</label>
 				<Select
+					id="custom-select"
+					name="custom-select"
+					options={countries}
 					components={{
 						SelectValue: ({ selectedIndex }: { selectedIndex: number }) => (
 							<div
@@ -59,10 +62,12 @@ function App() {
 								{option}
 							</div>
 						),
+						Icon: () => (
+							<svg width="10px" height="10px">
+								<polygon points="0,0 5,10 10,0" fill="currentColor" />
+							</svg>
+						),
 					}}
-					options={countries}
-					id="custom-select"
-					name="custom-select"
 				/>
 			</div>
 			{/* ------ */}

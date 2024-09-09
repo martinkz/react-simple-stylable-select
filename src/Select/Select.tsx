@@ -1,4 +1,4 @@
-import { useReducer, useRef, useEffect, ReactNode, forwardRef } from "react";
+import { useReducer, useRef, useEffect, ReactNode } from "react";
 
 type SelectProps = {
 	id: string;
@@ -12,6 +12,7 @@ type DisplayComponents = {
 	SelectValue?: React.FC<{ selectedIndex: number }>;
 	OptionListWrapper?: React.FC<{ children: React.ReactNode }>;
 	OptionValue?: React.FC<{ option: string; index: number; selectedIndex: number }>;
+	Icon?: React.ElementType;
 };
 
 type State = {
@@ -105,6 +106,7 @@ export function Select({ id, name, options, components }: SelectProps) {
 					dispatch({ type: "SET_SELECTED_INDEX", index });
 					dispatch({ type: "ANIMATE_OPTIONS_OUT" });
 				}}
+				Icon={components?.Icon}
 			>
 				{SelectValue ? <SelectValue selectedIndex={state.selectedIndex} /> : options[state.selectedIndex]}
 			</SelectContainer>
@@ -165,6 +167,7 @@ type SelectContainerProps = {
 	children: ReactNode;
 	id: string;
 	options: string[];
+	Icon?: React.ElementType;
 };
 
 export const SelectContainer = ({
@@ -178,6 +181,7 @@ export const SelectContainer = ({
 	children,
 	id,
 	options,
+	Icon,
 }: SelectContainerProps) => {
 	const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
 		if (!optionsVisible) {
@@ -231,8 +235,23 @@ export const SelectContainer = ({
 				}
 			}}
 			onKeyDown={handleKeyDown}
+			style={{
+				position: "relative",
+			}}
 		>
 			{children}
+			<span
+				style={{
+					position: "absolute",
+					right: "1rem",
+					top: "50%",
+					transform: `translateY(-50%) ${optionsVisible ? "rotate(180deg)" : ""}`,
+					transition: "transform 0.3s ease",
+					zIndex: 9999,
+				}}
+			>
+				{Icon && <Icon />}
+			</span>
 		</div>
 	);
 };
