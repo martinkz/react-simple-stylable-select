@@ -5,6 +5,13 @@ type SelectProps = {
 	name: string;
 	options: string[];
 	className?: string;
+	components?: DisplayComponents;
+};
+
+type DisplayComponents = {
+	SelectValue?: React.FC<{ selectedIndex: number }>;
+	OptionListWrapper?: React.FC<{ children: React.ReactNode }>;
+	OptionValue?: React.FC<{ option: string; index: number; selectedIndex: number }>;
 };
 
 type State = {
@@ -41,13 +48,17 @@ function reducer(state: State, action: SelectAction): State {
 	}
 }
 
-export function Select({ id, name, options }: SelectProps) {
+export function Select({ id, name, options, components }: SelectProps) {
 	const [state, dispatch] = useReducer(reducer, {
 		optionsMounted: false,
 		optionsVisible: false,
 		selectedIndex: 0,
 		activeIndex: 0,
 	});
+
+	const { SelectValue, OptionListWrapper, OptionValue } = components || {};
+
+	const OptionListWrapperComponent = OptionListWrapper ?? "div";
 
 	const selectRef = useRef<HTMLDivElement>(null);
 	const optionsRef = useRef<HTMLDivElement>(null);
@@ -83,68 +94,58 @@ export function Select({ id, name, options }: SelectProps) {
 		<>
 			<SelectContainer
 				ref={selectRef}
+				id={id}
+				options={options}
 				isVisible={state.optionsVisible}
-				selectedIndex={state.selectedIndex}
 				activeIndex={state.activeIndex}
 				onShowDropdown={() => dispatch({ type: "SHOW_DROPDOWN", index: state.selectedIndex })}
 				onHideDropdown={() => dispatch({ type: "ANIMATE_OPTIONS_OUT" })}
 				onChangeActiveIndex={(index) => dispatch({ type: "SET_ACTIVE_INDEX", index })}
-				onSelect2={(index) => {
+				onSelectOption={(index) => {
 					dispatch({ type: "SET_SELECTED_INDEX", index });
 					dispatch({ type: "ANIMATE_OPTIONS_OUT" });
 				}}
-				id={id}
-				options={options}
-				style={{
-					cursor: "default",
-					backgroundColor: "#333",
-					padding: "0.5rem",
-					minWidth: "200px",
-				}}
 			>
-				{options[state.selectedIndex]}
+				{SelectValue ? <SelectValue selectedIndex={state.selectedIndex} /> : options[state.selectedIndex]}
 			</SelectContainer>
 
 			{state.optionsMounted && (
 				<OptionsContainer
 					ref={optionsRef}
-					// isVisible={state.optionsVisible}
+					optionsVisible={state.optionsVisible}
 					onTransitionEnd={() => {
 						if (!state.optionsVisible) {
 							dispatch({ type: "HIDE_DROPDOWN" });
 						}
 					}}
-					style={{
-						gridTemplateRows: state.optionsVisible ? "1fr" : "0fr",
-						backgroundColor: "#333",
-						display: "grid",
-						position: "absolute",
-						left: 0,
-						top: 0,
-						width: "100%",
-						transition: "all 0.3s ease",
-						cursor: "default",
-					}}
 				>
-					{options.map((option, index) => (
-						<OptionItem
-							key={index}
-							isSelected={state.selectedIndex === index}
-							isActive={state.activeIndex === index}
-							onSelect2={() => {
-								dispatch({ type: "SET_SELECTED_INDEX", index });
-								dispatch({ type: "ANIMATE_OPTIONS_OUT" });
-							}}
-							id={`${id}-${index}`}
-							style={{
-								padding: "0.5rem",
-								backgroundColor: state.activeIndex === index ? "#555" : "transparent",
-							}}
-						>
-							{state.selectedIndex === index ? "✓ " : ""}
-							{option}
-						</OptionItem>
-					))}
+					<OptionListWrapperComponent>
+						{options.map((option, index) => (
+							<OptionItem
+								key={index}
+								isSelected={state.selectedIndex === index}
+								isActive={state.activeIndex === index}
+								onSelectOption={() => {
+									dispatch({ type: "SET_SELECTED_INDEX", index });
+									dispatch({ type: "ANIMATE_OPTIONS_OUT" });
+								}}
+								id={`${id}-${index}`}
+								style={{
+									outlineOffset: "-2px",
+									outline: state.activeIndex === index ? "2px dotted currentColor" : "none",
+								}}
+							>
+								{OptionValue ? (
+									<OptionValue option={option} index={index} selectedIndex={state.selectedIndex} />
+								) : (
+									<>
+										{state.selectedIndex === index ? "✓ " : ""}
+										{option}
+									</>
+								)}
+							</OptionItem>
+						))}
+					</OptionListWrapperComponent>
 				</OptionsContainer>
 			)}
 
@@ -155,12 +156,11 @@ export function Select({ id, name, options }: SelectProps) {
 
 type SelectContainerProps = {
 	isVisible: boolean;
-	selectedIndex: number;
 	activeIndex: number;
 	onShowDropdown: () => void;
 	onHideDropdown: () => void;
 	onChangeActiveIndex: (index: number) => void;
-	onSelect2: (index: number) => void;
+	onSelectOption: (index: number) => void;
 	children: ReactNode;
 	id: string;
 	options: string[];
@@ -170,12 +170,11 @@ export const SelectContainer = forwardRef<HTMLDivElement, SelectContainerProps>(
 	(
 		{
 			isVisible,
-			selectedIndex,
 			activeIndex,
 			onShowDropdown,
 			onHideDropdown,
 			onChangeActiveIndex,
-			onSelect2,
+			onSelectOption,
 			children,
 			id,
 			options,
@@ -204,7 +203,7 @@ export const SelectContainer = forwardRef<HTMLDivElement, SelectContainerProps>(
 				case "Enter":
 				case " ":
 					event.preventDefault();
-					onSelect2(activeIndex);
+					onSelectOption(activeIndex);
 					break;
 				case "Escape":
 					event.preventDefault();
@@ -244,16 +243,31 @@ export const SelectContainer = forwardRef<HTMLDivElement, SelectContainerProps>(
 );
 
 type OptionsContainerProps = {
-	// isVisible: boolean;
+	optionsVisible: boolean;
 	onTransitionEnd: () => void;
 	children: ReactNode;
-} & React.HTMLProps<HTMLDivElement>;
+};
 
 export const OptionsContainer = forwardRef<HTMLDivElement, OptionsContainerProps>(
-	({ onTransitionEnd, children, ...props }, ref) => {
+	({ optionsVisible, onTransitionEnd, children }, ref) => {
 		return (
 			<div style={{ position: "relative" }}>
-				<div ref={ref} role="listbox" tabIndex={-1} onTransitionEnd={onTransitionEnd} {...props}>
+				<div
+					ref={ref}
+					role="listbox"
+					tabIndex={-1}
+					onTransitionEnd={onTransitionEnd}
+					style={{
+						gridTemplateRows: optionsVisible ? "1fr" : "0fr",
+						display: "grid",
+						position: "absolute",
+						left: 0,
+						top: 0,
+						width: "100%",
+						transition: "all 0.3s ease",
+						cursor: "default",
+					}}
+				>
 					<div style={{ overflow: "hidden" }}>{children}</div>
 				</div>
 			</div>
@@ -264,14 +278,14 @@ export const OptionsContainer = forwardRef<HTMLDivElement, OptionsContainerProps
 type OptionItemProps = {
 	isSelected: boolean;
 	isActive: boolean;
-	onSelect2: () => void;
+	onSelectOption: () => void;
 	id: string;
 	children: ReactNode;
 } & React.HTMLProps<HTMLDivElement>;
 
-export function OptionItem({ isSelected, isActive, onSelect2, id, children, ...props }: OptionItemProps) {
+export function OptionItem({ isSelected, isActive, onSelectOption, id, children, ...props }: OptionItemProps) {
 	return (
-		<div role="option" id={id} aria-selected={isSelected} tabIndex={-1} onClick={onSelect2} {...props}>
+		<div role="option" id={id} aria-selected={isSelected} tabIndex={-1} onClick={onSelectOption} {...props}>
 			{children}
 		</div>
 	);
