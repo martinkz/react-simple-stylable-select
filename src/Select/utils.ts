@@ -3,12 +3,12 @@ import { useEffect } from "react";
 
 export function useOnClickOutside<T extends HTMLElement = HTMLElement>({
 	ref,
-	dependencies,
 	callback,
+	dependencies,
 }: {
 	ref: RefObject<T> | RefObject<T>[];
-	dependencies: unknown[];
 	callback: (event: MouseEvent | TouchEvent | FocusEvent) => void;
+	dependencies?: unknown[];
 }) {
 	useEffect(() => {
 		function handleEvent(event: MouseEvent | TouchEvent | FocusEvent) {
@@ -34,5 +34,5 @@ export function useOnClickOutside<T extends HTMLElement = HTMLElement>({
 				document.removeEventListener(event, handleEvent);
 			});
 		};
-	}, [dependencies, ref, callback]);
+	}, [ref, callback, dependencies]);
 }
