@@ -22,6 +22,7 @@ function App() {
 					id="custom-select"
 					name="custom-select"
 					options={countries}
+					onChange={(value) => console.log(value)}
 					components={{
 						SelectValue: ({ selectedIndex }: { selectedIndex: number }) => (
 							<div

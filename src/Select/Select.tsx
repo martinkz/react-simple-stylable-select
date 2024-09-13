@@ -7,6 +7,7 @@ type SelectProps = {
 	options: string[];
 	className?: string;
 	components?: DisplayComponents;
+	onChange?: (value: string) => void;
 };
 
 type DisplayComponents = {
@@ -50,7 +51,7 @@ function reducer(state: State, action: SelectAction): State {
 	}
 }
 
-export function Select({ id, name, options, components }: SelectProps) {
+export function Select({ id, name, options, components, onChange }: SelectProps) {
 	const [state, dispatch] = useReducer(reducer, {
 		optionsMounted: false,
 		optionsVisible: false,
@@ -78,6 +79,14 @@ export function Select({ id, name, options, components }: SelectProps) {
 		},
 	});
 
+	const handleSelectOption = (index: number) => {
+		dispatch({ type: "SET_SELECTED_INDEX", index });
+		dispatch({ type: "ANIMATE_OPTIONS_OUT" });
+		if (onChange) {
+			onChange(options[index]);
+		}
+	};
+
 	return (
 		<>
 			<SelectContainer
@@ -89,10 +98,7 @@ export function Select({ id, name, options, components }: SelectProps) {
 				onShowDropdown={() => dispatch({ type: "SHOW_DROPDOWN", index: state.selectedIndex })}
 				onHideDropdown={() => dispatch({ type: "ANIMATE_OPTIONS_OUT" })}
 				onChangeActiveIndex={(index) => dispatch({ type: "SET_FOCUSED_OPTION_INDEX", index })}
-				onSelectOption={(index) => {
-					dispatch({ type: "SET_SELECTED_INDEX", index });
-					dispatch({ type: "ANIMATE_OPTIONS_OUT" });
-				}}
+				onSelectOption={handleSelectOption}
 				Icon={components?.Icon}
 			>
 				{SelectValue ? <SelectValue selectedIndex={state.selectedIndex} /> : options[state.selectedIndex]}
@@ -114,10 +120,7 @@ export function Select({ id, name, options, components }: SelectProps) {
 								key={index}
 								isSelected={state.selectedIndex === index}
 								isActive={state.focusedOptionIndex === index}
-								onSelectOption={() => {
-									dispatch({ type: "SET_SELECTED_INDEX", index });
-									dispatch({ type: "ANIMATE_OPTIONS_OUT" });
-								}}
+								onSelectOption={() => handleSelectOption(index)}
 								id={`${id}-${index}`}
 							>
 								{OptionValue ? (
