@@ -1,4 +1,5 @@
 import { useReducer, useRef, useEffect, ReactNode } from "react";
+import { useOnClickOutside } from "./utils";
 
 type SelectProps = {
 	id: string;
@@ -70,26 +71,13 @@ export function Select({ id, name, options, components }: SelectProps) {
 		}
 	}, [state.optionsMounted]);
 
-	useEffect(() => {
-		function handleClickOutside(event: MouseEvent | TouchEvent) {
-			if (
-				selectRef.current &&
-				!selectRef.current.contains(event.target as Node) &&
-				optionsRef.current &&
-				!optionsRef.current.contains(event.target as Node)
-			) {
-				dispatch({ type: "ANIMATE_OPTIONS_OUT" });
-			}
-		}
-
-		document.addEventListener("mousedown", handleClickOutside);
-		document.addEventListener("touchstart", handleClickOutside);
-
-		return () => {
-			document.removeEventListener("mousedown", handleClickOutside);
-			document.removeEventListener("touchstart", handleClickOutside);
-		};
-	}, [state.optionsVisible]);
+	useOnClickOutside({
+		ref: [selectRef, optionsRef],
+		dependencies: [state.optionsVisible],
+		callback: (_event) => {
+			dispatch({ type: "ANIMATE_OPTIONS_OUT" });
+		},
+	});
 
 	return (
 		<>
@@ -212,7 +200,7 @@ export const SelectContainer = ({
 				onHideDropdown();
 				break;
 			case "Tab":
-				onHideDropdown();
+				// onHideDropdown();
 				break;
 			default:
 				break;
