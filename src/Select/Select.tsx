@@ -199,7 +199,7 @@ export const SelectContainer = ({
 				onHideDropdown();
 				break;
 			case "Tab":
-				// onHideDropdown();
+				onHideDropdown();
 				break;
 			default:
 				break;
