@@ -11,7 +11,7 @@ type SelectProps = {
 type DisplayComponents = {
 	SelectValue?: React.FC<{ selectedIndex: number }>;
 	OptionListWrapper?: React.FC<{ children: React.ReactNode }>;
-	OptionValue?: React.FC<{ option: string; index: number; selectedIndex: number; activeIndex: number }>;
+	OptionValue?: React.FC<{ option: string; index: number; selectedIndex: number; focusedOptionIndex: number }>;
 	Icon?: React.ElementType;
 };
 
@@ -19,7 +19,7 @@ type State = {
 	optionsMounted: boolean;
 	optionsVisible: boolean;
 	selectedIndex: number;
-	activeIndex: number;
+	focusedOptionIndex: number;
 };
 
 type SelectAction =
@@ -28,12 +28,12 @@ type SelectAction =
 	| { type: "ANIMATE_OPTIONS_IN" }
 	| { type: "ANIMATE_OPTIONS_OUT" }
 	| { type: "SET_SELECTED_INDEX"; index: number }
-	| { type: "SET_ACTIVE_INDEX"; index: number };
+	| { type: "SET_FOCUSED_OPTION_INDEX"; index: number };
 
 function reducer(state: State, action: SelectAction): State {
 	switch (action.type) {
 		case "SHOW_DROPDOWN":
-			return { ...state, optionsMounted: true, activeIndex: action.index };
+			return { ...state, optionsMounted: true, focusedOptionIndex: action.index };
 		case "HIDE_DROPDOWN":
 			return { ...state, optionsMounted: false };
 		case "ANIMATE_OPTIONS_IN":
@@ -42,8 +42,8 @@ function reducer(state: State, action: SelectAction): State {
 			return { ...state, optionsVisible: false };
 		case "SET_SELECTED_INDEX":
 			return { ...state, selectedIndex: action.index };
-		case "SET_ACTIVE_INDEX":
-			return { ...state, activeIndex: action.index };
+		case "SET_FOCUSED_OPTION_INDEX":
+			return { ...state, focusedOptionIndex: action.index };
 		default:
 			return state;
 	}
@@ -54,7 +54,7 @@ export function Select({ id, name, options, components }: SelectProps) {
 		optionsMounted: false,
 		optionsVisible: false,
 		selectedIndex: 0,
-		activeIndex: 0,
+		focusedOptionIndex: 0,
 	});
 
 	const { SelectValue, OptionListWrapper, OptionValue } = components || {};
@@ -98,10 +98,10 @@ export function Select({ id, name, options, components }: SelectProps) {
 				id={id}
 				options={options}
 				optionsVisible={state.optionsVisible}
-				activeIndex={state.activeIndex}
+				focusedOptionIndex={state.focusedOptionIndex}
 				onShowDropdown={() => dispatch({ type: "SHOW_DROPDOWN", index: state.selectedIndex })}
 				onHideDropdown={() => dispatch({ type: "ANIMATE_OPTIONS_OUT" })}
-				onChangeActiveIndex={(index) => dispatch({ type: "SET_ACTIVE_INDEX", index })}
+				onChangeActiveIndex={(index) => dispatch({ type: "SET_FOCUSED_OPTION_INDEX", index })}
 				onSelectOption={(index) => {
 					dispatch({ type: "SET_SELECTED_INDEX", index });
 					dispatch({ type: "ANIMATE_OPTIONS_OUT" });
@@ -126,7 +126,7 @@ export function Select({ id, name, options, components }: SelectProps) {
 							<OptionItem
 								key={index}
 								isSelected={state.selectedIndex === index}
-								isActive={state.activeIndex === index}
+								isActive={state.focusedOptionIndex === index}
 								onSelectOption={() => {
 									dispatch({ type: "SET_SELECTED_INDEX", index });
 									dispatch({ type: "ANIMATE_OPTIONS_OUT" });
@@ -138,7 +138,7 @@ export function Select({ id, name, options, components }: SelectProps) {
 										option={option}
 										index={index}
 										selectedIndex={state.selectedIndex}
-										activeIndex={state.activeIndex}
+										focusedOptionIndex={state.focusedOptionIndex}
 									/>
 								) : (
 									<>
@@ -160,7 +160,7 @@ export function Select({ id, name, options, components }: SelectProps) {
 type SelectContainerProps = {
 	selectRef: React.RefObject<HTMLDivElement>;
 	optionsVisible: boolean;
-	activeIndex: number;
+	focusedOptionIndex: number;
 	onShowDropdown: () => void;
 	onHideDropdown: () => void;
 	onChangeActiveIndex: (index: number) => void;
@@ -174,7 +174,7 @@ type SelectContainerProps = {
 export const SelectContainer = ({
 	selectRef,
 	optionsVisible,
-	activeIndex,
+	focusedOptionIndex,
 	onShowDropdown,
 	onHideDropdown,
 	onChangeActiveIndex,
@@ -196,16 +196,16 @@ export const SelectContainer = ({
 		switch (event.key) {
 			case "ArrowDown":
 				event.preventDefault();
-				onChangeActiveIndex((activeIndex + 1) % options.length);
+				onChangeActiveIndex((focusedOptionIndex + 1) % options.length);
 				break;
 			case "ArrowUp":
 				event.preventDefault();
-				onChangeActiveIndex((activeIndex - 1 + options.length) % options.length);
+				onChangeActiveIndex((focusedOptionIndex - 1 + options.length) % options.length);
 				break;
 			case "Enter":
 			case " ":
 				event.preventDefault();
-				onSelectOption(activeIndex);
+				onSelectOption(focusedOptionIndex);
 				break;
 			case "Escape":
 				event.preventDefault();
@@ -226,7 +226,7 @@ export const SelectContainer = ({
 			role="combobox"
 			aria-haspopup="listbox"
 			aria-expanded={optionsVisible}
-			aria-activedescendant={`${id}-${activeIndex}`}
+			aria-activedescendant={`${id}-${focusedOptionIndex}`}
 			tabIndex={0}
 			onClick={() => {
 				if (!optionsVisible) {
