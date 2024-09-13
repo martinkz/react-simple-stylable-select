@@ -11,7 +11,7 @@ type SelectProps = {
 type DisplayComponents = {
 	SelectValue?: React.FC<{ selectedIndex: number }>;
 	OptionListWrapper?: React.FC<{ children: React.ReactNode }>;
-	OptionValue?: React.FC<{ option: string; index: number; selectedIndex: number }>;
+	OptionValue?: React.FC<{ option: string; index: number; selectedIndex: number; activeIndex: number }>;
 	Icon?: React.ElementType;
 };
 
@@ -132,13 +132,14 @@ export function Select({ id, name, options, components }: SelectProps) {
 									dispatch({ type: "ANIMATE_OPTIONS_OUT" });
 								}}
 								id={`${id}-${index}`}
-								style={{
-									outlineOffset: "-2px",
-									outline: state.activeIndex === index ? "2px dotted currentColor" : "none",
-								}}
 							>
 								{OptionValue ? (
-									<OptionValue option={option} index={index} selectedIndex={state.selectedIndex} />
+									<OptionValue
+										option={option}
+										index={index}
+										selectedIndex={state.selectedIndex}
+										activeIndex={state.activeIndex}
+									/>
 								) : (
 									<>
 										{state.selectedIndex === index ? "✓ " : ""}

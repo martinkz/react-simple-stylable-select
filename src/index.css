@@ -19,8 +19,11 @@
 	padding: 2rem;
 }
 
-[role="combobox"]:focus,
-[role="option"]:focus {
+[role="combobox"]:focus-visible,
+[role="option"]:focus-visible {
 	outline: 2px dotted #fff;
 	outline-offset: -2px;
+}
+[role="option"]:hover {
+	background-color: #555 !important;
 }

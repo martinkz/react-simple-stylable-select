@@ -48,14 +48,18 @@ function App() {
 							option,
 							index,
 							selectedIndex,
+							activeIndex,
 						}: {
 							option: string;
 							index: number;
 							selectedIndex: number;
+							activeIndex: number;
 						}) => (
 							<div
 								style={{
 									padding: "0.5rem",
+									outlineOffset: "-1px",
+									outline: activeIndex === index ? "1px dotted #ffffff" : "none",
 								}}
 							>
 								{selectedIndex === index ? "✓ " : ""}
