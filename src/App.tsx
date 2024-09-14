@@ -26,7 +26,7 @@ function App() {
 			</label>
 			<div style={{ maxWidth: "320px" }}>
 				<Select
-					id="custom-select"
+					// id="custom-select"
 					name="custom-select"
 					options={countries}
 					defaultValue="South Africa"

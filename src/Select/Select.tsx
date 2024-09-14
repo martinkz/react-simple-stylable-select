@@ -2,7 +2,7 @@ import { useReducer, useRef, useEffect, ReactNode } from "react";
 import { useOnClickOutside } from "./utils";
 
 type SelectProps = {
-	id: string;
+	id?: string;
 	name: string;
 	options: string[];
 	components?: DisplayComponents;
@@ -103,6 +103,7 @@ export function Select({ id, name, options, components, value, defaultValue, onC
 			<SelectContainer
 				selectRef={selectRef}
 				id={id}
+				name={name}
 				options={options}
 				optionsVisible={state.optionsVisible}
 				focusedOptionIndex={state.focusedOptionIndex}
@@ -131,7 +132,7 @@ export function Select({ id, name, options, components, value, defaultValue, onC
 								key={index}
 								isSelected={state.selectedIndex === index}
 								onSelectOption={() => handleSelectOption(index)}
-								id={`${id}-${index}`}
+								id={`${name}-${index}`}
 							>
 								{OptionValue ? (
 									<OptionValue
@@ -165,7 +166,8 @@ type SelectContainerProps = {
 	onChangeActiveIndex: (index: number) => void;
 	onSelectOption: (index: number) => void;
 	children: ReactNode;
-	id: string;
+	id?: string;
+	name: string;
 	options: string[];
 	Icon?: React.ElementType;
 };
@@ -180,6 +182,7 @@ export const SelectContainer = ({
 	onSelectOption,
 	children,
 	id,
+	name,
 	options,
 	Icon,
 }: SelectContainerProps) => {
@@ -225,7 +228,7 @@ export const SelectContainer = ({
 			role="combobox"
 			aria-haspopup="listbox"
 			aria-expanded={optionsVisible}
-			aria-activedescendant={`${id}-${focusedOptionIndex}`}
+			aria-activedescendant={`${name}-${focusedOptionIndex}`}
 			tabIndex={0}
 			onClick={() => {
 				if (!optionsVisible) {
