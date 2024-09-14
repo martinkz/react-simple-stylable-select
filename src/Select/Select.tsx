@@ -251,7 +251,13 @@ export const SelectContainer = ({
 					zIndex: 9999,
 				}}
 			>
-				{Icon && <Icon />}
+				{Icon ? (
+					<Icon />
+				) : (
+					<svg width="10px" height="10px">
+						<polygon points="0,0 5,10 10,0" fill="currentColor" />
+					</svg>
+				)}
 			</span>
 		</div>
 	);
