@@ -76,7 +76,9 @@ export function Select({ id, name, options, components, defaultValue, onChange }
 	useOnClickOutside({
 		ref: [selectRef, optionsRef],
 		callback: (_event) => {
-			dispatch({ type: "ANIMATE_OPTIONS_OUT" });
+			if (state.optionsVisible) {
+				dispatch({ type: "ANIMATE_OPTIONS_OUT" });
+			}
 		},
 	});
 
