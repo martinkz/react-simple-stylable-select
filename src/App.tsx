@@ -47,23 +47,21 @@ function App() {
 						),
 						OptionValue: ({
 							option,
-							index,
-							selectedIndex,
-							focusedOptionIndex,
+							isSelected,
+							isFocused,
 						}: {
 							option: string;
-							index: number;
-							selectedIndex: number;
-							focusedOptionIndex: number;
+							isSelected: boolean;
+							isFocused: boolean;
 						}) => (
 							<div
 								style={{
 									padding: "0.5rem",
 									outlineOffset: "-1px",
-									outline: focusedOptionIndex === index ? "1px dotted #ffffff" : "none",
+									outline: isFocused ? "1px dotted #ffffff" : "none",
 								}}
 							>
-								{selectedIndex === index ? "✓ " : ""}
+								{isSelected ? "✓ " : ""}
 								{option}
 							</div>
 						),

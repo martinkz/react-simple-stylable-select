@@ -13,7 +13,7 @@ type SelectProps = {
 type DisplayComponents = {
 	SelectValue?: React.FC<{ selectedIndex: number }>;
 	OptionListWrapper?: React.FC<{ children: React.ReactNode }>;
-	OptionValue?: React.FC<{ option: string; index: number; selectedIndex: number; focusedOptionIndex: number }>;
+	OptionValue?: React.FC<{ option: string; isSelected: boolean; isFocused: boolean }>;
 	Icon?: React.ElementType;
 };
 
@@ -119,16 +119,14 @@ export function Select({ id, name, options, components, onChange }: SelectProps)
 							<OptionItem
 								key={index}
 								isSelected={state.selectedIndex === index}
-								isActive={state.focusedOptionIndex === index}
 								onSelectOption={() => handleSelectOption(index)}
 								id={`${id}-${index}`}
 							>
 								{OptionValue ? (
 									<OptionValue
 										option={option}
-										index={index}
-										selectedIndex={state.selectedIndex}
-										focusedOptionIndex={state.focusedOptionIndex}
+										isSelected={state.selectedIndex === index}
+										isFocused={state.focusedOptionIndex === index}
 									/>
 								) : (
 									<>
@@ -281,13 +279,12 @@ export const OptionsContainer = ({ optionsRef, optionsVisible, onTransitionEnd, 
 
 type OptionItemProps = {
 	isSelected: boolean;
-	isActive: boolean;
 	onSelectOption: () => void;
 	id: string;
 	children: ReactNode;
 } & React.HTMLProps<HTMLDivElement>;
 
-export function OptionItem({ isSelected, isActive, onSelectOption, id, children, ...props }: OptionItemProps) {
+export function OptionItem({ isSelected, onSelectOption, id, children, ...props }: OptionItemProps) {
 	return (
 		<div role="option" id={id} aria-selected={isSelected} tabIndex={-1} onClick={onSelectOption} {...props}>
 			{children}
