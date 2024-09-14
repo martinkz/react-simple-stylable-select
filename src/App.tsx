@@ -1,8 +1,10 @@
 import { Select } from "./Select/Select";
+import { useState } from "react";
 
 const countries = ["France", "South Africa", "Japan", "Antigua and Barbuda", "Germany", "United Kingdom"];
 
 function App() {
+	const [selected, setSelected] = useState<string>("Japan");
 	return (
 		<form action="/">
 			<h1>Custom select</h1>
@@ -22,12 +24,12 @@ function App() {
 					id="custom-select"
 					name="custom-select"
 					options={countries}
-					onChange={(value) => console.log(value)}
+					defaultValue={selected}
+					onChange={setSelected}
 					components={{
 						SelectValue: ({ selectedIndex }: { selectedIndex: number }) => (
 							<div
 								style={{
-									cursor: "default",
 									backgroundColor: "#333",
 									padding: "0.5rem",
 									minWidth: "200px",

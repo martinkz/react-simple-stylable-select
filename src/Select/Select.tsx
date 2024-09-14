@@ -5,8 +5,8 @@ type SelectProps = {
 	id: string;
 	name: string;
 	options: string[];
-	className?: string;
 	components?: DisplayComponents;
+	defaultValue?: string | null;
 	onChange?: (value: string) => void;
 };
 
@@ -51,11 +51,12 @@ function reducer(state: State, action: SelectAction): State {
 	}
 }
 
-export function Select({ id, name, options, components, onChange }: SelectProps) {
+export function Select({ id, name, options, components, defaultValue, onChange }: SelectProps) {
+	const initialIndex = options.indexOf(defaultValue ?? options[0]);
 	const [state, dispatch] = useReducer(reducer, {
 		optionsMounted: false,
 		optionsVisible: false,
-		selectedIndex: 0,
+		selectedIndex: initialIndex,
 		focusedOptionIndex: 0,
 	});
 
@@ -226,6 +227,7 @@ export const SelectContainer = ({
 			onKeyDown={handleKeyDown}
 			style={{
 				position: "relative",
+				cursor: "default",
 			}}
 		>
 			{children}
