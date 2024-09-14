@@ -6,7 +6,8 @@ type SelectProps = {
 	name: string;
 	options: string[];
 	components?: DisplayComponents;
-	defaultValue?: string | null;
+	value?: string;
+	defaultValue?: string;
 	onChange?: (value: string) => void;
 };
 
@@ -51,14 +52,21 @@ function reducer(state: State, action: SelectAction): State {
 	}
 }
 
-export function Select({ id, name, options, components, defaultValue, onChange }: SelectProps) {
-	const initialIndex = options.indexOf(defaultValue ?? options[0]);
+export function Select({ id, name, options, components, value, defaultValue, onChange }: SelectProps) {
+	const defaultIndex = options.indexOf(defaultValue ?? options[0]);
 	const [state, dispatch] = useReducer(reducer, {
 		optionsMounted: false,
 		optionsVisible: false,
-		selectedIndex: initialIndex,
+		selectedIndex: defaultIndex,
 		focusedOptionIndex: 0,
 	});
+
+	if (value) {
+		const newIndex = options.indexOf(value);
+		if (newIndex !== state.selectedIndex) {
+			dispatch({ type: "SET_SELECTED_INDEX", index: newIndex });
+		}
+	}
 
 	const { SelectValue, OptionListWrapper, OptionValue } = components || {};
 

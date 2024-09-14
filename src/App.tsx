@@ -8,6 +8,11 @@ function App() {
 	return (
 		<form action="/">
 			<h1>Custom select</h1>
+			<div>
+				<button type="button" onClick={() => setSelected(selected === "Germany" ? "United Kingdom" : "Germany")}>
+					Set country
+				</button>
+			</div>
 			{/* <input type="text" id="test" name="test" /> */}
 			{/* <div style={{ maxWidth: "320px" }}>
 				<label htmlFor="test-select" id="select-label">
@@ -24,7 +29,8 @@ function App() {
 					id="custom-select"
 					name="custom-select"
 					options={countries}
-					defaultValue={selected}
+					defaultValue="South Africa"
+					value={selected}
 					onChange={setSelected}
 					components={{
 						SelectValue: ({ selectedIndex }: { selectedIndex: number }) => (
@@ -32,7 +38,7 @@ function App() {
 								style={{
 									backgroundColor: "#333",
 									padding: "0.5rem",
-									minWidth: "200px",
+									border: "4px solid #9c5eda",
 								}}
 							>
 								{countries[selectedIndex]}
@@ -42,6 +48,7 @@ function App() {
 							<div
 								style={{
 									backgroundColor: "#333",
+									border: "4px solid #269ed6",
 								}}
 							>
 								{children}
@@ -59,8 +66,8 @@ function App() {
 							<div
 								style={{
 									padding: "0.5rem",
-									outlineOffset: "-1px",
-									outline: isFocused ? "1px dotted #ffffff" : "none",
+									outlineOffset: "-4px",
+									outline: isFocused ? "4px solid #45cd4f" : "none",
 								}}
 							>
 								{isSelected ? "✓ " : ""}
