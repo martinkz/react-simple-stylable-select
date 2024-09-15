@@ -15,6 +15,10 @@
 	"files": [
 		"dist"
 	],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/martinkz/react-simple-stylable-select.git"
+	},
 	"scripts": {
 		"dev": "vite",
 		"build": "tsc && vite build",
