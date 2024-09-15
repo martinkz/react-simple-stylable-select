@@ -1,6 +1,10 @@
 # React simple styleable and accessible select
 
-This is a simple animatable select implementation which is customisable via several components that can be passed in. It uses the [ARIA combobox pattern ](https://www.w3.org/WAI/ARIA/apg/#combobox) for accessibility and is modelled after the [sonder-ui select](https://github.com/microsoft/sonder-ui/tree/master/src/components/select) (see that page for more notes on accessibility).
+This is a simple animatable select implementation which is customisable via several components that can be passed in. It uses the [ARIA combobox pattern ](https://www.w3.org/WAI/ARIA/apg/#combobox) for accessibility and is modelled after the [sonder-ui select](https://github.com/microsoft/sonder-ui/tree/master/src/components/select) (see the linked page for more notes on accessibility).
+
+# Demo
+
+[Stackblitz demo](https://stackblitz.com/edit/react-simple-styleable-select?file=src%2FApp.tsx)
 
 # Installation and usage
 
@@ -13,7 +17,7 @@ Usage:
 ```js
 import { Select } from "react-simple-stylable-select";
 
-const countries = ["France", "South Africa", "Japan", "Antigua and Barbuda", "Germany", "United Kingdom"];
+const countries = ["France", "South Africa", "Japan", "Antigua and Barbuda", "Argentina", "United Kingdom"];
 ```
 
 ```js
@@ -25,10 +29,11 @@ const countries = ["France", "South Africa", "Japan", "Antigua and Barbuda", "Ge
     SelectValue: ({ selectedIndex }: { selectedIndex: number }) => (
       <div
         style={{
-          minWidth: '220px',
-          padding: '0.5rem',
+          minWidth: '200px',
+          padding: '0.5rem 2rem 0.5rem 0.5rem',
           border: '2px solid #eee',
           background: '#f9f9f9',
+          color: '#111',
         }}
       >
         {countries[selectedIndex]}
@@ -38,6 +43,7 @@ const countries = ["France", "South Africa", "Japan", "Antigua and Barbuda", "Ge
       <div
         style={{
           backgroundColor: '#eee',
+          color: '#111',
         }}
       >
         {children}
@@ -66,7 +72,6 @@ const countries = ["France", "South Africa", "Japan", "Antigua and Barbuda", "Ge
     ),
   }}
 />
-/>;
 ```
 
 ## Props
