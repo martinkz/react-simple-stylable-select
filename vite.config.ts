@@ -19,8 +19,8 @@ export default defineConfig({
 		copyPublicDir: false,
 		lib: {
 			entry: resolve(__dirname, "src/Select/index.ts"),
-			name: "react-simple-select",
-			fileName: "react-simple-select",
+			name: "react-simple-stylable-select",
+			fileName: "react-simple-stylable-select",
 			formats: ["es", "umd"],
 		},
 		rollupOptions: {

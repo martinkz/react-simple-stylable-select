@@ -5,7 +5,7 @@ This is a simple animatable select implementation which is customisable via seve
 # Installation and usage
 
 ```
-npm install react-simple-custom-select
+npm install react-simple-stylable-select
 ```
 
 Usage:
