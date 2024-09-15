@@ -1,6 +1,6 @@
 {
   "name": "react-simple-stylable-select",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "type": "module",
   "main": "./dist/react-simple-stylable-select.umd.cjs",
   "module": "./dist/react-simple-stylable-select.js",

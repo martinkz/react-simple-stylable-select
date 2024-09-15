@@ -99,22 +99,20 @@ export function Select({ id, name, options, components, value, defaultValue, onC
   };
 
   return (
-    <>
-      <SelectContainer
-        selectRef={selectRef}
-        id={id}
-        name={name}
-        options={options}
-        optionsVisible={state.optionsVisible}
-        focusedOptionIndex={state.focusedOptionIndex}
-        onShowDropdown={() => dispatch({ type: "SHOW_DROPDOWN", index: state.selectedIndex })}
-        onHideDropdown={() => dispatch({ type: "ANIMATE_OPTIONS_OUT" })}
-        onChangeActiveIndex={(index) => dispatch({ type: "SET_FOCUSED_OPTION_INDEX", index })}
-        onSelectOption={handleSelectOption}
-        Icon={components?.Icon}
-      >
-        {SelectValue ? <SelectValue selectedIndex={state.selectedIndex} /> : options[state.selectedIndex]}
-      </SelectContainer>
+    <SelectContainer
+      selectRef={selectRef}
+      id={id}
+      name={name}
+      options={options}
+      optionsVisible={state.optionsVisible}
+      focusedOptionIndex={state.focusedOptionIndex}
+      onShowDropdown={() => dispatch({ type: "SHOW_DROPDOWN", index: state.selectedIndex })}
+      onHideDropdown={() => dispatch({ type: "ANIMATE_OPTIONS_OUT" })}
+      onChangeActiveIndex={(index) => dispatch({ type: "SET_FOCUSED_OPTION_INDEX", index })}
+      onSelectOption={handleSelectOption}
+      Icon={components?.Icon}
+    >
+      {SelectValue ? <SelectValue selectedIndex={state.selectedIndex} /> : options[state.selectedIndex]}
 
       {state.optionsMounted && (
         <OptionsContainer
@@ -152,8 +150,8 @@ export function Select({ id, name, options, components, value, defaultValue, onC
         </OptionsContainer>
       )}
 
-      <input type="hidden" id={id} name={name} value={options[state.selectedIndex]} />
-    </>
+      <input type="hidden" name={name} value={options[state.selectedIndex]} />
+    </SelectContainer>
   );
 }
 
@@ -275,25 +273,23 @@ type OptionsContainerProps = {
 
 export const OptionsContainer = ({ optionsRef, optionsVisible, onTransitionEnd, children }: OptionsContainerProps) => {
   return (
-    <div style={{ position: "relative" }}>
-      <div
-        ref={optionsRef}
-        role="listbox"
-        tabIndex={-1}
-        onTransitionEnd={onTransitionEnd}
-        style={{
-          gridTemplateRows: optionsVisible ? "1fr" : "0fr",
-          display: "grid",
-          position: "absolute",
-          left: 0,
-          top: 0,
-          width: "100%",
-          transition: "all 0.3s ease",
-          cursor: "default",
-        }}
-      >
-        <div style={{ overflow: "hidden" }}>{children}</div>
-      </div>
+    <div
+      ref={optionsRef}
+      role="listbox"
+      tabIndex={-1}
+      onTransitionEnd={onTransitionEnd}
+      style={{
+        gridTemplateRows: optionsVisible ? "1fr" : "0fr",
+        display: "grid",
+        position: "absolute",
+        left: 0,
+        top: "auto",
+        width: "100%",
+        transition: "all 0.3s ease",
+        cursor: "default",
+      }}
+    >
+      <div style={{ overflow: "hidden" }}>{children}</div>
     </div>
   );
 };
