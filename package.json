@@ -6,6 +6,7 @@
     "combobox",
     "dropdown"
   ],
+  "license": "MIT",
   "type": "module",
   "main": "./dist/react-simple-stylable-select.umd.cjs",
   "module": "./dist/react-simple-stylable-select.js",
