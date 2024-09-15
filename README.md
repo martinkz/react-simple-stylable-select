@@ -11,45 +11,61 @@ npm install react-simple-stylable-select
 Usage:
 
 ```js
-const countries = ["France", "South Africa", "Japan", "Antigua and Barbuda", "Germany", "United Kingdom"];
+import { Select } from "react-simple-stylable-select";
 
+const countries = ["France", "South Africa", "Japan", "Antigua and Barbuda", "Germany", "United Kingdom"];
+```
+
+```js
 <Select
-	name="select"
-	options={countries}
-	defaultValue="United Kingdom"
-	components={{
-		SelectValue: ({ selectedIndex }: { selectedIndex: number }) => (
-			<div
-				style={{
-					backgroundColor: "#333",
-					padding: "0.5rem",
-				}}
-			>
-				{countries[selectedIndex]}
-			</div>
-		),
-		OptionListWrapper: ({ children }: { children: React.ReactNode }) => (
-			<div
-				style={{
-					backgroundColor: "#333",
-				}}
-			>
-				{children}
-			</div>
-		),
-		OptionValue: ({ option, isSelected, isFocused }: { option: string, isSelected: boolean, isFocused: boolean }) => (
-			<div
-				style={{
-					padding: "0.5rem",
-					outlineOffset: "-2px",
-					outline: isFocused ? "2px solid #45cd4f" : "none",
-				}}
-			>
-				{isSelected ? "✓ " : ""}
-				{option}
-			</div>
-		),
-	}}
+  name="select"
+  options={countries}
+  defaultValue="United Kingdom"
+  components={{
+    SelectValue: ({ selectedIndex }: { selectedIndex: number }) => (
+      <div
+        style={{
+          minWidth: '220px',
+          padding: '0.5rem',
+          border: '2px solid #eee',
+          background: '#f9f9f9',
+        }}
+      >
+        {countries[selectedIndex]}
+      </div>
+    ),
+    OptionListWrapper: ({ children }: { children: React.ReactNode }) => (
+      <div
+        style={{
+          backgroundColor: '#eee',
+        }}
+      >
+        {children}
+      </div>
+    ),
+    OptionValue: ({
+      option,
+      isSelected,
+      isFocused,
+    }: {
+      option: string;
+      isSelected: boolean;
+      isFocused: boolean;
+    }) => (
+      <div
+        style={{
+          padding: '0.5rem',
+          outlineOffset: '-2px',
+          outline: isFocused ? '2px solid #ccc' : 'none',
+          background: isSelected ? '#ccc' : 'none',
+        }}
+      >
+        {isSelected ? '✓ ' : ''}
+        {option}
+      </div>
+    ),
+  }}
+/>
 />;
 ```
 

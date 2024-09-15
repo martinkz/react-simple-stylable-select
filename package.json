@@ -1,54 +1,56 @@
 {
-	"name": "react-simple-stylable-select",
-	"version": "0.0.2",
-	"type": "module",
-	"main": "./dist/react-simple-stylable-select.umd.cjs",
-	"module": "./dist/react-simple-stylable-select.js",
-	"types": "./dist/index.d.ts",
-	"exports": {
-		".": {
-			"import": "./dist/react-simple-stylable-select.js",
-			"require": "./dist/react-simple-stylable-select.umd.cjs",
-			"types": "./dist/index.d.ts"
-		}
-	},
-	"files": [
-		"dist"
-	],
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/martinkz/react-simple-stylable-select.git"
-	},
-	"scripts": {
-		"dev": "vite",
-		"build": "tsc && vite build",
-		"lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-		"preview": "vite preview",
-		"test": "vitest"
-	},
-	"dependencies": {
-		"react": "^18.3.1",
-		"react-dom": "^18.3.1"
-	},
-	"devDependencies": {
-		"@testing-library/dom": "^10.4.0",
-		"@testing-library/jest-dom": "^6.5.0",
-		"@testing-library/react": "^16.0.1",
-		"@testing-library/user-event": "^14.5.2",
-		"@types/node": "^22.5.2",
-		"@types/react": "^18.3.5",
-		"@types/react-dom": "^18.3.0",
-		"@typescript-eslint/eslint-plugin": "^8.3.0",
-		"@typescript-eslint/parser": "^8.3.0",
-		"@vitejs/plugin-react": "^4.3.1",
-		"eslint": "^8.57.0",
-		"eslint-plugin-react-hooks": "^4.6.2",
-		"eslint-plugin-react-refresh": "^0.4.11",
-		"jsdom": "^25.0.0",
-		"typescript": "^5.5.4",
-		"vite": "^5.4.2",
-		"vite-plugin-dts": "^4.1.0",
-		"vite-plugin-lib-inject-css": "^2.1.1",
-		"vitest": "^2.0.5"
-	}
+  "name": "react-simple-stylable-select",
+  "version": "0.0.2",
+  "type": "module",
+  "main": "./dist/react-simple-stylable-select.umd.cjs",
+  "module": "./dist/react-simple-stylable-select.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/react-simple-stylable-select.js",
+      "require": "./dist/react-simple-stylable-select.umd.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/martinkz/react-simple-stylable-select.git"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview",
+    "test": "vitest",
+    "format": "prettier --write \"./**/*.{js,jsx,mjs,cjs,ts,tsx,json}\""
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.5.0",
+    "@testing-library/react": "^16.0.1",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/node": "^22.5.2",
+    "@types/react": "^18.3.5",
+    "@types/react-dom": "^18.3.0",
+    "@typescript-eslint/eslint-plugin": "^8.3.0",
+    "@typescript-eslint/parser": "^8.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "eslint": "^8.57.0",
+    "eslint-plugin-react-hooks": "^4.6.2",
+    "eslint-plugin-react-refresh": "^0.4.11",
+    "jsdom": "^25.0.0",
+    "prettier": "^3.3.3",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.2",
+    "vite-plugin-dts": "^4.1.0",
+    "vite-plugin-lib-inject-css": "^2.1.1",
+    "vitest": "^2.0.5"
+  }
 }
