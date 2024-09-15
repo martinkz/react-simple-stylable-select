@@ -258,7 +258,7 @@ export const SelectContainer = ({
           <Icon />
         ) : (
           <svg width="10px" height="10px">
-            <polygon points="0,0 5,10 10,0" fill="currentColor" />
+            <polygon points="0,0 5,10 10,0" fill="inherit" />
           </svg>
         )}
       </span>
